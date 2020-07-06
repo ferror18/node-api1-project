@@ -7,67 +7,54 @@ const server = express();
 // teaches express how to read JSON form req.body
 server.use(express.json()); //// <<<<<<<<< new line
 
-let hubs = [
+let users = [
     {
-        id: shortid.generate(),
-        name: "web 30 node intro",
-        lessonId: 1,
-        cohort: "web 30",
-    },
-    {
-        id: shortid.generate(),
-        name: "web 30 java intro",
-        lessonId: 101,
-        cohort: "web 30",
-    },
-];
-
-let lessons = [
-    {
-        id: 1,
-        name: "node intro",
-    },
-    {
-        id: 101,
-        name: "java intro",
-    },
+        id: shortid.generate(), // hint: use the shortid npm package to generate it
+        name: "Jane Doe", // String, required
+        bio: "Not Tarzan's Wife, another Jane",  // String, required
+      }
 ];
 
 server.get("/", (req, res) => {
-    res.status(200).send("<h1>Hello Web 31</h1>");
+    res.status(200).send("<h1>You accesed my api and it is healthy</h1>");
 });
 
-server.get("/api/hubs", (req, res) => {
-    res.json(hubs);
-});
-server.get("/api/lessons", (req, res) => {
-    res.status(200).json(lessons);
+server.get("/users", (req, res) => {
+    res.status(200).json(users);
 });
 
-server.post("/api/hubs", (req, res) => {
-    const newHub = req.body; // needs express.json() middleware
-
-    newHub.id = shortid.generate();
-
-    hubs.push(newHub);
-
-    res.status(201).json(newHub);
-});
-
-server.delete("/api/hubs/:id", (req, res) => {
+server.get("/users/:id", (req, res) => {
     const id = req.params.id;
-    const deleted = hubs.find(h => h.id === id);
+    let record = users.filter(user=>id===user.id)
 
-    hubs = hubs.filter(h => h.id !== id);
+    res.status(200).json(record);
+
+});
+
+server.post("/users", (req, res) => {
+    const newUser = req.body; // needs express.json() middleware
+
+    newUser.id = shortid.generate();
+
+    users.push(newUser);
+
+    res.status(201).json(newUser);
+});
+
+server.delete("/users/:id", (req, res) => {
+    const id = req.params.id;
+    const deleted = users.find(h => h.id === id);
+
+    users = users.filter(h => h.id !== id);
 
     res.status(200).json(deleted);
 });
 
-server.put("/api/hubs/:id", (req, res) => {
+server.put("/users/:id", (req, res) => {
     const id = req.params.id;
     const changes = req.body;
 
-    let found = hubs.find(h => h.id === id);
+    let found = users.find(h => h.id === id);
 
     if (found) {
         // found a hub
@@ -79,5 +66,5 @@ server.put("/api/hubs/:id", (req, res) => {
     }
 });
 
-const PORT = 8000; // we visit http://localhost:8000/ to see the api
+const PORT = 8001; // we visit http://localhost:8000/ to see the api
 server.listen(PORT, () => console.log(`server running on port ${PORT}`));
